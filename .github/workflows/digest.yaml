@@ -1,0 +1,71 @@
+name: Congressional Daily Record Summary
+
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  X_API_KEY: ${{ secrets.X_API_KEY }}
+
+on:
+  schedule:
+    - cron: "0 5 * * *"  # Daily at 5am
+  workflow_dispatch:     # Manual trigger for testing
+
+permissions:
+  contents: write
+
+jobs:
+  summarize-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install dependencies
+        run: python3 -m pip install -r requirements.txt
+
+      - name: Scrape and summarize articles
+        run: python3 digest.py
+
+      - name: Check what was created
+        run: |
+          ls -la summaries/
+          cat summaries/*.md || echo "No files found"
+
+      - name: Commit summaries
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add summaries/
+          git commit -m "Daily digest $(date +%Y-%m-%d)" || echo "No changes to commit"
+          git push
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Send Email via SendGrid
+        run: |
+          # Get the latest file
+          latest_file=$(ls summaries/ | sort | tail -n1)
+          
+          # Build JSON payload using jq with file input
+          json_payload=$(jq -n \
+            --arg to "barbara@mechanicalgirl.com" \
+            --arg from "barbara@mechanicalgirl.com" \
+            --arg subject "Daily Congressional Summary" \
+            --rawfile content "summaries/$latest_file" \
+            '{
+                personalizations: [{ to: [{ email: $to }] }],
+                from: { email: $from },
+                subject: $subject,
+                content: [{ type: "text/plain", value: $content }]
+            }')
+
+          curl --request POST \
+            --url https://api.sendgrid.com/v3/mail/send \
+            --header "Authorization: Bearer ${{ secrets.SENDGRID_API_KEY }}" \
+            --header 'Content-Type: application/json' \
+            --data "$json_payload"
