@@ -97,7 +97,7 @@ def main():
                 f.write(f"{s['title']}\n")
                 f.write(f"{s['url']}\n")
                 f.write(f"Input: {s['input_tokens']}, Output: {s['output_tokens']}\n\n")
-                f.write(f"{s['text']}\n")
+                f.write(f"{s['text']}\n\n")
                 f.write("---\n\n")
         else:
             f.write("---\n\n")
