@@ -5,8 +5,8 @@ env:
   X_API_KEY: ${{ secrets.X_API_KEY }}
 
 on:
-  # schedule:
-  #   - cron: "0 5 * * *"  # Daily at 5am
+  schedule:
+    - cron: "0 5 * * *"  # Daily at 5am
   workflow_dispatch:     # Manual trigger for testing
 
 permissions:

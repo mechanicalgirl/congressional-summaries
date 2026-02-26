@@ -13,7 +13,7 @@ X_API_KEY = os.getenv("X_API_KEY")
 def get_daily_record_meta():
     api_url = urljoin(API_URL, API_VERSION) + "/"
     headers = {"format": "json", "x-api-key": X_API_KEY}
-    metadata_path = 'daily-congressional-record?format=json&limit=1'
+    metadata_path = 'daily-congressional-record'
     r = requests.get(api_url + metadata_path, headers=headers)
     response = r.json()
     metadata = {
@@ -24,20 +24,20 @@ def get_daily_record_meta():
         'url': response['dailyCongressionalRecord'][0]['url'],
         'volumeNumber': response['dailyCongressionalRecord'][0]['volumeNumber']
     }
-    print("METADATA", metadata)
+    # print(f"Metadata: {metadata}")
     return metadata
 
 def get_daily_article_urls(d):
     urls = []
     api_url = urljoin(API_URL, API_VERSION) + "/"
     headers = {"format": "json", "x-api-key": X_API_KEY}
-    articles_path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles?format=json"
+    articles_path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles"
     r = requests.get(api_url + articles_path, headers=headers)
     response = r.json()
     pag_count = response['pagination']['count']
     offset = 0
     while offset < pag_count:
-        path = f"daily-congressional-record/172/35/articles?offset={offset}&limit=20&format=json"
+        path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles?offset={offset}&limit=20"
         r = requests.get(api_url + path, headers=headers)
         resp = r.json()
         for a in resp['articles']:
@@ -72,6 +72,7 @@ def summarize(text):
 
 def main():
     daily = get_daily_record_meta()
+    digest_url = f"https://www.congress.gov/congressional-record/volume-{daily['volumeNumber']}/issue-{daily['issueNumber']}/daily-digest"
     article_urls = get_daily_article_urls(daily)
     all_articles = []
     for a in article_urls:
@@ -85,14 +86,11 @@ def main():
     os.makedirs('summaries', exist_ok=True)
     with open(f"summaries/{today}.md", 'w') as f:
         header = f"# Congressional Summary - {today}\n\n"
-        print(f"Writing header: {header}")
         f.write(header)
         if summary:
+            f.write(f"{digest_url}\n\n")
             f.write(f"{summary['text']}\n\n")
-            for url in article_urls:
-                f.write(f"{url['url']}\n")
             f.write(f"Input: {summary['input_tokens']}, Output: {summary['output_tokens']}\n\n")
-            f.write("---\n\n")
         else:
             f.write("---\n\n")
             f.write(f"No summaries for {today}\n\n")
