@@ -24,6 +24,7 @@ def get_daily_record_meta():
         'url': response['dailyCongressionalRecord'][0]['url'],
         'volumeNumber': response['dailyCongressionalRecord'][0]['volumeNumber']
     }
+    print("METADATA", metadata)
     return metadata
 
 def get_daily_article_urls(d):
@@ -50,7 +51,7 @@ def get_daily_article_urls(d):
 
 def get_article_text(article):
     r = requests.get(article['url'])
-    return r.text
+    return article['section'] + ': ' + article['title'] + '\n\n' + r.text
 
 def summarize(text):
     """Summarize article using Claude"""
@@ -60,7 +61,7 @@ def summarize(text):
         max_tokens=500,
         messages=[{
             "role": "user",
-            "content": f"Summarize this article in 1-2 concise paragraphs. Only return the paragraphs, no other labels or headers:\n\n{text[:10000]}"
+            "content": f"Summarize this digest of events in 10-15 concise paragraphs:\n\n{text}"
         }]
     )
     return {
@@ -71,19 +72,13 @@ def summarize(text):
 
 def main():
     daily = get_daily_record_meta()
-    articles = get_daily_article_urls(daily)
-
-    summaries = []
-    for a in articles:
+    article_urls = get_daily_article_urls(daily)
+    all_articles = []
+    for a in article_urls:
         article_text = get_article_text(a)
-        try:
-            summary = summarize(article_text)
-            summaries.append(a|summary)
-        except Exception as e:
-            print(f"Error processing {url}: {e}")
-            import traceback
-            traceback.print_exc()
-        print(f"Successfully processed {a['title']}")
+        all_articles.append(article_text)
+    digest = '\n'.join(all_articles)
+    summary = summarize(digest)
 
     today = date.today().strftime("%Y-%m-%d")
     filepath = f"summaries/{today}.md"
@@ -92,13 +87,12 @@ def main():
         header = f"# Congressional Summary - {today}\n\n"
         print(f"Writing header: {header}")
         f.write(header)
-        if summaries:
-            for s in summaries:
-                f.write(f"{s['title']}\n")
-                f.write(f"{s['url']}\n")
-                f.write(f"Input: {s['input_tokens']}, Output: {s['output_tokens']}\n\n")
-                f.write(f"{s['text']}\n\n")
-                f.write("---\n\n")
+        if summary:
+            f.write(f"{summary['text']}\n\n")
+            for url in article_urls:
+                f.write(f"{url['url']}\n")
+            f.write(f"Input: {summary['input_tokens']}, Output: {summary['output_tokens']}\n\n")
+            f.write("---\n\n")
         else:
             f.write("---\n\n")
             f.write(f"No summaries for {today}\n\n")
