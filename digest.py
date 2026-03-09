@@ -61,7 +61,7 @@ def summarize(text):
         max_tokens=500,
         messages=[{
             "role": "user",
-            "content": f"Summarize this digest of events in 10-15 concise paragraphs:\n\n{text}"
+            "content": f"Summarize this digest of events in 10-15 concise paragraphs:\n\n{text[:200000]}"
         }]
     )
     return {
