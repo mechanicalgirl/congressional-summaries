@@ -35,6 +35,9 @@ jobs:
           ls -la summaries/
           cat summaries/*.md || echo "No files found"
 
+      - name: Generate XML
+        run: python3 .github/scripts/rssgen.py
+
       - name: Commit summaries
         run: |
           git config user.name github-actions
@@ -42,9 +45,6 @@ jobs:
           git add summaries/
           git commit -m "Daily digest $(date +%Y-%m-%d)" || echo "No changes to commit"
           git push
-
-      - name: Run script
-        run: python3 .github/scripts/rssgen.py
 
       - name: Install jq
         run: sudo apt-get install -y jq
