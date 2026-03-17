@@ -50,7 +50,7 @@ for e in entries:
     fe.id()
     fe.title(e['title'])
     fe.guid(e['guid'])
-    fe.link(href=e['url']")
+    fe.link(href=e['url'])
     fe.description(e['title'])
     fe.content(e['content'], type='html')
     fe.published(e['date'])
