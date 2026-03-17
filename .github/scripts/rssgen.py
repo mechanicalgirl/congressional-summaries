@@ -25,13 +25,14 @@ with open(todaysfile, 'r') as file:
 content = markdown.markdown(body)
 datetime_obj = datetime.strptime(today, '%Y-%m-%d')
 datetime_obj = datetime_obj.replace(tzinfo=timezone.utc)
+title = title.replace('# ', '')
 
 fg = FeedGenerator()
-fg.id('https://www.mechanicalgirl.com')
-fg.title(title)
+fg.id('http://bloodredrose.com/congressional-summaries.github.io/rss.xml')
+fg.title('Congressional Daily Record')
 fg.author({'name':'Barbara','email':'barbara@mechanicalgirl.com'})
-fg.link(href='https://www.mechanicalgirl.com', rel='alternate')
-fg.subtitle('The RSS feed from mechanicalgirl.com')
+fg.link(href='http://bloodredrose.com/congressional-summaries.github.io/rss.xml', rel='alternate')
+fg.subtitle('RSS feed from congressional-summaries.github.io/')
 fg.language('en')
 
 fe = fg.add_entry(order="append")
