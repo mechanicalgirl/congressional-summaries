@@ -35,14 +35,25 @@ fg.link(href='http://bloodredrose.com/congressional-summaries.github.io/rss.xml'
 fg.subtitle('RSS feed from congressional-summaries.github.io/')
 fg.language('en')
 
-fe = fg.add_entry(order="append")
-fe.id()
-fe.title(title)
-fe.guid(url)
-fe.link(href=url)
-fe.description(title)
-fe.content(content, type='html')
-fe.published(datetime_obj)
+entries = []
+entry = {
+    'title' = title,
+    'date' = datetime_obj
+    'guid': url,
+    'url': url,
+    'content': content
+}
+entries.append(entry)
+
+for e in entries:
+    fe = fg.add_entry(order="append")
+    fe.id()
+    fe.title(e['title'])
+    fe.guid(e['guid'])
+    fe.link(href=e['url']")
+    fe.description(e['title'])
+    fe.content(e['content'], type='html')
+    fe.published(e['date'])
 
 fg.rss_file('index.xml')
 rssfeed = fg.rss_str()
