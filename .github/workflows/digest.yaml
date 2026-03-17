@@ -16,7 +16,7 @@ jobs:
   summarize-news:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Check out repository to the runner
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -42,6 +42,9 @@ jobs:
           git add summaries/
           git commit -m "Daily digest $(date +%Y-%m-%d)" || echo "No changes to commit"
           git push
+
+      - name: Run script
+        run: python3 .github/scripts/rssgen.py
 
       - name: Install jq
         run: sudo apt-get install -y jq

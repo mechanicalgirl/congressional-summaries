@@ -1,2 +1,4 @@
 anthropic==0.77.1
+feedgen==1.0.0
+Markdown==3.9
 requests==2.32.5
