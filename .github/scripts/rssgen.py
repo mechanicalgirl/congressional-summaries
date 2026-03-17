@@ -37,8 +37,8 @@ fg.language('en')
 
 entries = []
 entry = {
-    'title' = title,
-    'date' = datetime_obj
+    'title': title,
+    'date': datetime_obj
     'guid': url,
     'url': url,
     'content': content
