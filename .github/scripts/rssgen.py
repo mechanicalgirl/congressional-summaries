@@ -43,6 +43,6 @@ fe.description(title)
 fe.content(content, type='html')
 fe.published(datetime_obj)
 
-fg.rss_file('rss.xml')
+fg.rss_file('index.xml')
 rssfeed = fg.rss_str()
 
