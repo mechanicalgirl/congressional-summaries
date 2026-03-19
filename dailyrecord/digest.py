@@ -1,7 +1,7 @@
 import anthropic
 import requests
 
-from datetime import date
+from datetime import date, datetime
 import os
 import sys
 import time
@@ -140,12 +140,6 @@ def main():
         article_text = get_article_text(a)
         all_articles.append(article_text)
     raw_text = '\n'.join(all_articles)
-
-    """
-    # for local testing:
-    with open('text.txt', 'r') as f:
-        raw_text = f.read()
-    """
     summaries = []
     bins = clean_digest(raw_text)
     for i, bin_text in enumerate(bins):
@@ -163,7 +157,7 @@ def main():
     filepath = f"{DIR_PATH}/{today}.md"
     os.makedirs(DIR_PATH, exist_ok=True)
     with open(f"{DIR_PATH}/{today}.md", 'w') as f:
-        header = f"# Congressional Summary - {today}\n\n"
+        header = f"# Congressional Summary (run on {today})\n\n"
         f.write(header)
         if digest:
             f.write(f"[{digest_url}]({digest_url})\n\n")
@@ -174,4 +168,8 @@ def main():
     print(f"File written. Size: {os.path.getsize(filepath)} bytes")
 
 if __name__ == "__main__":
-    main()
+    weekday = datetime.now().weekday()
+    if weekday in(6, 0):  # Sunday, Monday
+        pass
+    else:
+        main()

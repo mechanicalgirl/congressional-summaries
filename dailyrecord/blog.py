@@ -15,11 +15,11 @@ from dailyrecord.track import capture
 
 bp = Blueprint('blog', __name__)
 DIR_PATH = os.path.join(os.getcwd(), 'summaries')
+PAGE_COUNT = 10
 
 def pagination():
     digest_count = sum(1 for entry in os.listdir(DIR_PATH) if os.path.isfile(os.path.join(DIR_PATH, entry)))
-    print("COUNT", digest_count)
-    total = math.ceil(digest_count/20)
+    total = math.ceil(digest_count/PAGE_COUNT)
     page_list = [int(a) for a in range(1, total+1, 1)]
     return page_list
 
@@ -29,7 +29,7 @@ def index():
     page_list = pagination()
 
     files = sorted(os.listdir(DIR_PATH), reverse=True)
-    digests = files[0:20]
+    digests = files[0:PAGE_COUNT]
 
     entries = []
     for d in digests:
@@ -40,7 +40,7 @@ def index():
         entry['date'] = digest_date
         entries.append(entry)
 
-    return render_template('blog/index.html', digests=entries)
+    return render_template('blog/index.html', digests=entries, pagination=page_list)
 
 @bp.route('/digest/<digest_date>/')
 def digest(digest_date):
@@ -56,25 +56,21 @@ def digest(digest_date):
     entry['body']  = markdown.markdown(digest_body)
     return render_template('blog/digest.html', entry=entry)
 
-@bp.route('/pages/<page_number>/')
+@bp.route('/pages/<int:page_number>/')
 def pages(page_number):
     capture(request.headers.get('User-Agent'))
     page_list = pagination()
-    db = get_db()
 
-    total = len(page_list) * 20
-    ids = total - ((int(page_number) * 20) - 20)
-
-    page_query = f"SELECT * FROM digest WHERE id <= {ids} ORDER BY created_at DESC LIMIT 20"
-    digests = db.execute(page_query).fetchall()
+    files = sorted(os.listdir(DIR_PATH), reverse=True)
+    digests = files[(page_number-1)*PAGE_COUNT:][0:PAGE_COUNT]
 
     entries = []
-    for p in digests:
+    for d in digests:
+        digest_date = d.split('.')[0]
         entry = {}
-        entry['title'] = p['title']
-        entry['slug'] = p['slug']
-        entry['body_snippet'] = remove_html_tags(p['body'])[0:100]
-        entry['date'] = p['created_at'][0:10]
+        entry['title'] = f"Congressional Daily Record for {digest_date}"
+        entry['slug'] = f"/digest/{digest_date}"
+        entry['date'] = digest_date
         entries.append(entry)
 
     return render_template('blog/index.html', digests=entries, pagination=page_list)

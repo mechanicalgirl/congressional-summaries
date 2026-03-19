@@ -8,27 +8,29 @@
   {% endblock %}
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pico.sand.css') }}">
 </head>
 <body>
+i
+<main class="container">
 
-<pre class="ascii-header">
-<center>
-<a href="/">CONGRESS-DAILY.COM</a>
-==================
-</center>
-</pre>
+<nav>
+  <ul>
+    <li></li>
+  </ul>
+  <ul>
+    <li><strong><a href="/">Home</a></strong></li>
+    <!-- <li><a href="/about">About</a></li> -->
+    <li><a href="/rss">RSS</a></li>
+    <li><a href="https://github.com/mechanicalgirl/congressional-summaries" target="new">GitHub</a></li>
+  </ul>
+</nav>
 
-<div class="content">
+<div>
   {% block page_header %}{% endblock %}
   {% block content %}{% endblock %}
 </div>
 
-<div class="footer">
-  <p>
-    [ <a href="/rss" target="new">rss</a> ]
-  </p>
-</div>
-
+</main>
 </body>
 </html>
