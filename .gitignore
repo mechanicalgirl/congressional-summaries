@@ -1,7 +1,7 @@
 .DS_Store
-NOTES.txt
-text.txt
 instance/
+local_resources/
+rss.xml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
