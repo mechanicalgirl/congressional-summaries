@@ -15,7 +15,7 @@ from dailyrecord.track import capture
 
 bp = Blueprint('blog', __name__)
 DIR_PATH = os.path.join(os.getcwd(), 'summaries')
-PAGE_COUNT = 10
+PAGE_COUNT = 20
 
 def pagination():
     digest_count = sum(1 for entry in os.listdir(DIR_PATH) if os.path.isfile(os.path.join(DIR_PATH, entry)))
