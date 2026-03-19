@@ -3,13 +3,13 @@ import requests
 
 from datetime import date
 import os
-import re
 import sys
 import time
 from urllib.parse import urljoin
 
 API_URL = "https://api.congress.gov/"
 API_VERSION = "v3"
+DIR_PATH = os.path.join(os.getcwd(), 'summaries')
 X_API_KEY = os.getenv("X_API_KEY")
 
 def get_daily_record_meta():
@@ -160,13 +160,13 @@ def main():
     digest = '\n\n'.join(summaries)
 
     today = date.today().strftime("%Y-%m-%d")
-    filepath = f"summaries/{today}.md"
-    os.makedirs('summaries', exist_ok=True)
-    with open(f"summaries/{today}.md", 'w') as f:
+    filepath = f"{DIR_PATH}/{today}.md"
+    os.makedirs(DIR_PATH, exist_ok=True)
+    with open(f"{DIR_PATH}/{today}.md", 'w') as f:
         header = f"# Congressional Summary - {today}\n\n"
         f.write(header)
         if digest:
-            f.write(f"{digest_url}\n\n")
+            f.write(f"[{digest_url}]({digest_url})\n\n")
             f.write(f"{digest}\n\n")
         else:
             f.write("---\n\n")

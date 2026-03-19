@@ -28,15 +28,12 @@ jobs:
         run: python3 -m pip install -r requirements.txt
 
       - name: Scrape and summarize articles
-        run: python3 digest.py
+        run: python3 dailyrecord/digest.py
 
       - name: Check what was created
         run: |
           ls -la summaries/
           cat summaries/*.md || echo "No files found"
-
-      - name: Generate XML
-        run: python3 .github/scripts/rssgen.py
 
       - name: Commit summaries
         run: |
