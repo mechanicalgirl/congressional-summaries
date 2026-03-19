@@ -1,0 +1,22 @@
+name: Deploy All
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy using Rsync
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avrh --delete --exclude=".github" --exclude="instance/"
+          path: /
+          remote_path: /home/cdrecord/congressional-summaries
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

@@ -40,7 +40,6 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add summaries/
-          git add index.xml
           git commit -m "Daily digest $(date +%Y-%m-%d)" || echo "No changes to commit"
           git push
 
@@ -70,3 +69,19 @@ jobs:
             --header "Authorization: Bearer ${{ secrets.SENDGRID_API_KEY }}" \
             --header 'Content-Type: application/json' \
             --data "$json_payload"
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: [ summarize-news ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy using Rsync
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avrh --delete --exclude=".github" --exclude="instance/"
+          path: /
+          remote_path: /home/cdrecord/congressional-summaries
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
