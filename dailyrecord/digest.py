@@ -130,6 +130,22 @@ def summarize(text, bin_index, total_bins):
     text = message.content[0].text
     return text
 
+def summarize_final(text):
+    """Summarize all article text using Claude"""
+    client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=500,
+        messages=[{
+            "role": "user",
+            "content": f"Summarize this text in 3-5 concise paragraphs with no headers, titles, or markdown formatting. Begin your response directly with the first sentence of the summary.\n\n{text[:200000]}"
+        }]
+    )
+    input_tokens = message.usage.input_tokens
+    output_tokens = message.usage.output_tokens
+    text = message.content[0].text
+    return text
+
 def main():
     daily = get_daily_record_meta()
     digest_url = f"https://www.congress.gov/congressional-record/volume-{daily['volumeNumber']}/issue-{daily['issueNumber']}/daily-digest"
@@ -151,7 +167,8 @@ def main():
         print(summary, '\n')
         time.sleep(60)
         summaries.append(summary)
-    digest = '\n\n'.join(summaries)
+    raw_digest = '\n\n'.join(summaries)
+    digest = summarize_final(raw_digest)
 
     today = date.today().strftime("%Y-%m-%d")
     filepath = f"{DIR_PATH}/{today}.md"
