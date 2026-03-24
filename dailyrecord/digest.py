@@ -185,8 +185,4 @@ def main():
     print(f"File written. Size: {os.path.getsize(filepath)} bytes")
 
 if __name__ == "__main__":
-    weekday = datetime.now().weekday()
-    if weekday in(6, 0):  # Sunday, Monday
-        pass
-    else:
-        main()
+    main()
