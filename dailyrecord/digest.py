@@ -153,7 +153,7 @@ def main():
     # if the most recent daily issue is more than two days old, don't run the rest
     issue_date = datetime.strptime(daily['issueDate'], "%Y-%m-%dT%H:%M:%SZ")
     if (datetime.today()-issue_date).days > 2:
-        print(f"Most recent issue is from daily['issueDate']")
+        print(f"Most recent issue is from {daily['issueDate']}")
         sys.exit()
 
     article_urls = get_daily_article_urls(daily)
