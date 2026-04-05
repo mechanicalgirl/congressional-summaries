@@ -1,7 +1,7 @@
 import anthropic
 import requests
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import os
 import sys
 import time
@@ -14,8 +14,8 @@ X_API_KEY = os.getenv("X_API_KEY")
 
 def get_daily_record_meta():
     api_url = urljoin(API_URL, API_VERSION) + "/"
-    headers = {"format": "json", "x-api-key": X_API_KEY}
-    metadata_path = 'daily-congressional-record'
+    headers = {"accept": "application/json", "x-api-key": X_API_KEY}
+    metadata_path = 'daily-congressional-record?format=json'
     r = requests.get(api_url + metadata_path, headers=headers)
     response = r.json()
     metadata = {
@@ -32,14 +32,14 @@ def get_daily_record_meta():
 def get_daily_article_urls(d):
     urls = []
     api_url = urljoin(API_URL, API_VERSION) + "/"
-    headers = {"format": "json", "x-api-key": X_API_KEY}
-    articles_path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles"
+    headers = {"accept": "application/json", "x-api-key": X_API_KEY}
+    articles_path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles?format=json"
     r = requests.get(api_url + articles_path, headers=headers)
     response = r.json()
     pag_count = response['pagination']['count']
     offset = 0
     while offset < pag_count:
-        path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles?offset={offset}&limit=20"
+        path = f"daily-congressional-record/{d['volumeNumber']}/{d['issueNumber']}/articles?format=json&offset={offset}&limit=20"
         r = requests.get(api_url + path, headers=headers)
         resp = r.json()
         for a in resp['articles']:
@@ -149,6 +149,12 @@ def summarize_final(text):
 def main():
     daily = get_daily_record_meta()
     digest_url = f"https://www.congress.gov/congressional-record/volume-{daily['volumeNumber']}/issue-{daily['issueNumber']}/daily-digest"
+
+    # if the most recent daily issue is more than two days old, don't run the rest
+    issue_date = datetime.strptime(daily['issueDate'], "%Y-%m-%dT%H:%M:%SZ")
+    if (datetime.today()-issue_date).days > 2:
+        print(f"Most recent issue is from daily['issueDate']")
+        sys.exit()
 
     article_urls = get_daily_article_urls(daily)
     all_articles = []
