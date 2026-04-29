@@ -33,7 +33,6 @@ jobs:
       - name: Check what was created
         run: |
           ls -la summaries/
-          cat summaries/*.md || echo "No files found"
 
       - name: Commit summaries
         run: |
@@ -52,7 +51,7 @@ jobs:
       - name: Deploy using Rsync
         uses: burnett01/rsync-deployments@6.0.0
         with:
-          switches: -avrh --delete --exclude=".github" --exclude="instance/"
+          switches: -avrh --delete --exclude=".git" --exclude=".github" --exclude="instance/"
           path: /
           remote_path: /home/cdrecord/congressional-summaries
           remote_host: ${{ secrets.SSH_HOST }}
