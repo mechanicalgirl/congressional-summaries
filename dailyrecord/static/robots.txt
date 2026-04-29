@@ -85,7 +85,7 @@ User-agent: Inventory Crawler
 Disallow: /
 
 User-agent: Mediapartners-Google*
-Disallow:
+Disallow: /
 
 User-agent: net-Robot
 Disallow: /
