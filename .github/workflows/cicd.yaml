@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Deploy using Rsync
-        uses: burnett01/rsync-deployments@6.0.0
+        uses: burnett01/rsync-deployments@8.0.3
         with:
           switches: -avrh --delete --exclude=".git" --exclude=".github" --exclude="instance/" --exclude="dailyrecord/digest.py"
           path: /

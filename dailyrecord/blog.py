@@ -25,7 +25,7 @@ def pagination():
 
 @bp.route('/')
 def index():
-    capture(request.headers.get('User-Agent'))
+    capture(request.headers, request.url)
     page_list = pagination()
 
     files = sorted(os.listdir(DIR_PATH), reverse=True)
@@ -44,7 +44,7 @@ def index():
 
 @bp.route('/digest/<digest_date>/')
 def digest(digest_date):
-    capture(request.headers.get('User-Agent'))
+    capture(request.headers, request.url)
     page_list = pagination()
 
     with open(f"{DIR_PATH}/{digest_date}.md", 'r') as f:
@@ -58,7 +58,7 @@ def digest(digest_date):
 
 @bp.route('/pages/<int:page_number>/')
 def pages(page_number):
-    capture(request.headers.get('User-Agent'))
+    capture(request.headers, request.url)
     page_list = pagination()
 
     files = sorted(os.listdir(DIR_PATH), reverse=True)
