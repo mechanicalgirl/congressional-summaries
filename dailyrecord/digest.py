@@ -26,7 +26,7 @@ def get_daily_record_meta():
         'url': response['dailyCongressionalRecord'][0]['url'],
         'volumeNumber': response['dailyCongressionalRecord'][0]['volumeNumber']
     }
-    # print(f"Metadata: {metadata}")
+    print(f"Metadata: {metadata}")
     return metadata
 
 def get_daily_article_urls(d):
@@ -149,6 +149,7 @@ def summarize_final(text):
 def main():
     daily = get_daily_record_meta()
     digest_url = f"https://www.congress.gov/congressional-record/volume-{daily['volumeNumber']}/issue-{daily['issueNumber']}/daily-digest"
+    print("Digest URL", digest_url)
 
     # if the most recent daily issue is more than two days old, don't run the rest
     issue_date = datetime.strptime(daily['issueDate'], "%Y-%m-%dT%H:%M:%SZ")
@@ -157,6 +158,7 @@ def main():
         sys.exit()
 
     article_urls = get_daily_article_urls(daily)
+
     all_articles = []
     for a in article_urls:
         article_text = get_article_text(a)
