@@ -8,5 +8,5 @@ Markdown==3.9
 requests==2.32.5
 SQLAlchemy==2.0.38
 ua-parser[regex]==1.0.2
-uWSGI==2.0.28
+uWSGI==2.0.31
 Werkzeug==3.1.3
